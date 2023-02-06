@@ -21,7 +21,7 @@ export default function WeatherView() {
     });
 
     return (
-        <div class="card w-25 bg-light">
+        <div class="card bg-light">
         <a target="_blank" rel="noreferrer" href="https://weather.com/weather/today/l/f6f6b1cb1cd9947e9768c25dc2d924009d6079538fc8829ff28f93fc5c988da1" style={{textDecoration:"None"}}>
             <h5 class="card-header bg-secondary text-white">Weather</h5>
             <div class="card-body">
