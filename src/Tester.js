@@ -1,9 +1,9 @@
 
-import TodoTable from "./widgets/Todo/TodoTable";
+//import TodoTable from "./widgets/Todo/TodoTable";
+import WeatherView from "./widgets/Weather/WeatherView";
 function Tester() {
     return (
-        
-        <TodoTable />
+        <WeatherView/>
     )
 }
 
