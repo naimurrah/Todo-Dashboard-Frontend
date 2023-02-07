@@ -1,47 +1,24 @@
 import TodoItem from "./TodoItem";
-import {useState, useCallback} from "react";
+import {useState, useCallback, useEffect} from "react";
 import AddTodoModal from "./AddTodoModal";
 
 
 function TodoTable() {
-    const [todos, setTodos] = useState([
-        {
-            id:1,
-            description:"Calc Homework",
-            tag:1,
-            hasDue:false,
-            date: "",
-            isDone: true,
-        },
-        {
-            id:2,
-            description:"Spanish Homework",
-            tag:3,
-            hasDue:true,
-            date: "2022-10-10",
-            isDone: false,
-        },
-        {
-            id:3,
-            description:"Wash Laundry",
-            tag:2,
-            hasDue:true,
-            date: "2022-10-10",
-            isDone: false,
-        },
-        {
-            id:4,
-            description:"Sleep",
-            tag:2,
-            hasDue:false,
-            date: "",
-            isDone: false,
-        },
-    ]);
+    const [todos, setTodos] = useState([]);
 
-    // remove this once backend is implemented
-    const [currentId, setId] = useState(5)
+    useEffect(() => {
+        getTodos();
+    }, []);
+    
+    const getTodos = async () => {
+        const prom = await fetch("https://tddbbe.azurewebsites.net/todos");
+        const todos = await prom.json();
+        console.log("HERE");
+        console.log(todos);
+        setTodos(todos);
+    }
 
+    // FIX TAGS
     // get these from db
     const tags = {
         1:"School",
@@ -53,11 +30,23 @@ function TodoTable() {
     const tagIds = [1, 2, 3, 4];
 
     // functions
-    const deleteTodo = useCallback((tid) => {
+    // TODO
+    const deleteTodo =  useCallback( async (tid) => {
         // have a fetch query too to delete in db
-       setTodos(todos.filter(todo => todo.id !== tid));
+        try {
+            const response = await fetch(`https://tddbbe.azurewebsites.net/todos/id=${tid}`, {
+                method: "DELETE"
+            });
+            const deletedTodo = await response.json();
+            setTodos(todos.filter(todo => todo._id !== tid));
+            return deletedTodo;
+        } catch (error) {
+            console.error(error.message);
+        }
+
     }, [todos]);
 
+    // TODO
     const submitTodo = (todo) => {
         // TODO Will query and change all submitted todos
         // let addTodo = todo;
@@ -73,19 +62,44 @@ function TodoTable() {
 
     }
 
-    const editTodo = (todo) => {
-        console.log("Edited ");
+    // TODO
+    const editTodo = async (todo) => {
+        try {
+            console.log("Edited ");
+            const response = await fetch(`https://tddbbe.azurewebsites.net/todos/id=${todo._id}`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(todo)
+            });
+            const newTodo = await response.json();
+            return newTodo;
+            
+        } catch (error) {
+            console.error(error.message);
+        }
+
     }
 
+    // TODO - fix addTodo function and MODALS both edit and add toto
     // TODO implement addTodo function
-    const addTodo = (todo) => {
-        setTodos(todos => [...todos, todo]);
-        console.log("current id: " + currentId);
-        setId(currentId + 1);
-        console.log("current id: " + currentId);
-        console.log("Added new item");
+    const addTodo = async (todo) => {
+        // first push to database
+        console.log("Added ");
+        const response = await fetch(`https://tddbbe.azurewebsites.net/todos`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(todo)
+        });
+        const newTodo = await response.json();
+
+        // get the id
+        // then set todos
+        setTodos(todos => [...todos, newTodo]);
     };
-    // have a useEffect function to load todos
 
 
     return (
@@ -105,12 +119,12 @@ function TodoTable() {
                 <tbody>
                     {todos.map((todo) => {
                         return (
-                            <TodoItem key={todo.id} item={todo} editTodo={editTodo} submitTodo={submitTodo} deleteTodo={deleteTodo} tags={tags} tagIds={tagIds}></TodoItem>
+                            <TodoItem key={todo._id} item={todo} editTodo={editTodo} submitTodo={submitTodo} deleteTodo={deleteTodo} tags={tags} tagIds={tagIds}></TodoItem>
                         )
                     })}
                 </tbody>
             </table>
-            <AddTodoModal addTodo={addTodo} idNum={currentId} tags={tags} tagIds={tagIds}/>
+            <AddTodoModal addTodo={addTodo} tags={tags} tagIds={tagIds}/>
         </div>
     )
 }

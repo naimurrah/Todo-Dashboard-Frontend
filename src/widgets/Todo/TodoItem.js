@@ -5,15 +5,17 @@ function TodoItem({ item, tags, tagIds, deleteTodo, submitTodo}) {
     const [done, setDone] = useState(item.isDone);
     // maybe pass tags as prop
     const [description, setDes] = useState(item.description);
-    const [tag, setTag] = useState(tags[item.tag]);
+    const [tag, setTag] = useState(item.tag);
     const [dueDate, setDueDate] = useState(item.date);
     const modalID = "eMod"+item.id;
 
 
+    // TODO Fix the DONE, EDIT, and DELETE BUTTONS
+
     // use callback for delete/add/mark as done
     return (
         <>
-            <tr key={item.id} className={done ? "table-success" : ""}>
+            <tr key={item._id} className={done ? "table-success" : ""}>
                 <td><button type="button" className="btn btn-primary" onClick={
                     () => {
                         submitTodo(item);

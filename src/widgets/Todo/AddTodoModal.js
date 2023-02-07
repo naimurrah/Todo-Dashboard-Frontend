@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 
-export default function AddTodoModal({ addTodo, idNum, tags, tagIds }) {
+export default function AddTodoModal({ addTodo, tags, tagIds }) {
     const [newDesc, setNewDesc] = useState("");
     const [newTag, setNewTag] = useState(0);
     const [newDueDate, setNewDueDate] = useState("");
     let newTD = {
-        id: idNum,
         description: "New Todo",
         tag: 3,
         hasDue: false,
